@@ -10,7 +10,7 @@
 
 typedef struct {
     int func; // 波形タイプ（0: サイン波, 1: 方形波, 2: 三角波）
-    double frequencies[3]; // 周波数（Hz）
+    double frequencies[6]; // 周波数（Hz）
     double duration;       // 長さ（秒）
 } Note;
 
@@ -23,7 +23,7 @@ short* generateChord(Note* note, int* outSampleCount) {
     for (int i = 0; i < sampleCount; ++i) {
         double t = (double)i / SAMPLE_RATE;
         double value = 0.0;
-        for (int j = 0; j < 3; ++j) {
+        for (int j = 0; j < 6; ++j) {
             if (note->frequencies[j] > 0.0) {
                 if (note->func == 1) { // 方形波
                     for (int k = 0; k < 300; k++) {
@@ -48,7 +48,7 @@ short* generateChord(Note* note, int* outSampleCount) {
                 }
             }
         }
-        value /= 3.0; // 平均化
+        value /= 6.0; // 平均化
         samples[i] = (short)(value * 32767);
     }
 
