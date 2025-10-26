@@ -26,7 +26,7 @@ short* generateChord(Note* note, int* outSampleCount) {
         for (int j = 0; j < 3; ++j) {
             if (note->frequencies[j] > 0.0) {
                 if (note->func == 1) { // •ûŒ`”g
-                    for (int k = 0; k < 100; k++) {
+                    for (int k = 0; k < 300; k++) {
                         value += (sin(2 * M_PI * note->frequencies[j] * t * (2 * k + 1)) / (2 * k + 1));
                     }
                 }
@@ -36,7 +36,7 @@ short* generateChord(Note* note, int* outSampleCount) {
                     }
                 }
                 else if (note->func == 3) {// ƒmƒRƒMƒŠ”g
-                    for (int k = 1; k < 100; k++) {
+                    for (int k = 1; k < 500; k++) {
                         value += (sin(2 * M_PI * note->frequencies[j] * t * k)) / k;
                     }
                 }

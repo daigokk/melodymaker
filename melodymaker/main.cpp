@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "melodymaker.h"
 
-#define FUNC 3 // 波形タイプ（0: サイン波, 1: 方形波, 2: 三角波, 3: ノコギリ波, 4: ホワイトノイズ）
+#define FUNC 2 // 波形タイプ（0: サイン波, 1: 方形波, 2: 三角波, 3: ノコギリ波, 4: ホワイトノイズ）
 
 int main() {
     Note melody[] = {
@@ -64,52 +64,27 @@ int main() {
     short* allSamples = NULL;
     int totalSamples = 0;
 
-    int size = sizeof(melody) / sizeof(Note);
-    for (int i = 0; i < size; ++i) {
-        int sampleCount = 0;
-        short* samples = generateChord(&melody[i], &sampleCount);
-        applyDecay(samples, sampleCount, 0.8);     // 短く鋭い減衰
-        applyDelay(samples, sampleCount, 0.1, 0.4); // タイトなディレイ
-        applyEcho(samples, sampleCount, 0.2, 0.3);  // 空間的な広がり
+    Note* song[] = { melody, melody2, metalRiff };
+    int songSizes[] = {
+        sizeof(melody) / sizeof(Note),
+        sizeof(melody2) / sizeof(Note),
+        sizeof(metalRiff) / sizeof(Note)
+    };
 
-        if (!samples) continue;
+    for (int s = 0; s < 3; ++s) {
+        for (int i = 0; i < songSizes[s]; ++i) {
+            int sampleCount = 0;
+            short* samples = generateChord(&song[s][i], &sampleCount);
+            applyDecay(samples, sampleCount, 1.0);
+            applyDelay(samples, sampleCount, 0.08, 0.35);
+            applyEcho(samples, sampleCount, 0.15, 0.25);
 
-        allSamples = (short*)realloc(allSamples, sizeof(short) * (totalSamples + sampleCount));
-        memcpy(allSamples + totalSamples, samples, sizeof(short) * sampleCount);
-        totalSamples += sampleCount;
-        free(samples);
-    }
-
-    size = sizeof(melody2) / sizeof(Note);
-    for (int i = 0; i < size; ++i) {
-        int sampleCount = 0;
-        short* samples = generateChord(&melody2[i], &sampleCount);
-        applyDecay(samples, sampleCount, 1.2);     // 速く減衰
-        applyDelay(samples, sampleCount, 0.05, 0.3); // 軽めのディレイ
-        applyEcho(samples, sampleCount, 0.1, 0.2);   // 控えめなエコー
-
-        if (!samples) continue;
-
-        allSamples = (short*)realloc(allSamples, sizeof(short) * (totalSamples + sampleCount));
-        memcpy(allSamples + totalSamples, samples, sizeof(short) * sampleCount);
-        totalSamples += sampleCount;
-        free(samples);
-    }
-
-    size = sizeof(metalRiff) / sizeof(Note);
-    for (int i = 0; i < size; ++i) {
-        int sampleCount = 0;
-        short* samples = generateChord(&metalRiff[i], &sampleCount);
-        applyDecay(samples, sampleCount, 0.8);     // 短く鋭い減衰
-        applyDelay(samples, sampleCount, 0.1, 0.4); // タイトなディレイ
-        applyEcho(samples, sampleCount, 0.2, 0.3);  // 空間的な広がり
-
-        if (!samples) continue;
-
-        allSamples = (short*)realloc(allSamples, sizeof(short) * (totalSamples + sampleCount));
-        memcpy(allSamples + totalSamples, samples, sizeof(short) * sampleCount);
-        totalSamples += sampleCount;
-        free(samples);
+            if (!samples) continue;
+            allSamples = (short*)realloc(allSamples, sizeof(short) * (totalSamples + sampleCount));
+            memcpy(allSamples + totalSamples, samples, sizeof(short) * sampleCount);
+            totalSamples += sampleCount;
+            free(samples);
+        }
     }
 
     FILE* outFile = fopen(FILENAME_WAV, "wb");
